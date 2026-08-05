@@ -447,9 +447,24 @@ elif menu == "Analisis Dataset":
                 st.pyplot(fig2)
 
         st.divider()
+        
+        df_download = df_res.copy()
+        
+       
+        for col in df_download.select_dtypes(include=['object']).columns:
+            df_download[col] = df_download[col].astype(str).str.replace('\n', ' ').str.replace('\r', ' ')
+      
+        rename_map = {
+            c_name: 'Teks Asli',
+            'clean_text': 'Teks Bersih',
+            'final_text': 'Teks Hasil Stemming',
+            'prediksi_sentimen': 'Hasil Prediksi Sentimen'
+        }
+        df_download = df_download.rename(columns=rename_map)
+
         st.download_button(
-            "⬇️ Unduh Hasil Prediksi Lengkap (CSV)",
-            data=df_res.to_csv(index=False).encode('utf-8'),
+            label="⬇️ Unduh Hasil Prediksi Lengkap (Excel / CSV)",
+            data=df_download.to_csv(index=False, sep=';', encoding='utf-8-sig').encode('utf-8-sig'),
             file_name="hasil_analisis_sentimen_lengkap.csv",
             mime="text/csv"
         )
