@@ -551,3 +551,5 @@ elif menu == "Tentang Penelitian":
         st.metric("Akurasi Model", "74%")
     
     st.caption("SMOTE diterapkan untuk menangani ketidakseimbangan kelas pada data training.")
+
+    # update
