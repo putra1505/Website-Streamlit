@@ -13,40 +13,30 @@ from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
 from streamlit_option_menu import option_menu
 
-# ---------------------------------------------------------
-# SETUP HALAMAN STREAMLIT
-# ---------------------------------------------------------
 st.set_page_config(
     page_title="Analisis Sentimen Bawang Putih Herbal - Naive Bayes",
     page_icon="🧄",
     layout="wide"
 )
 
-# ---------------------------------------------------------
-# CUSTOM CSS (TEMA: CLEAN MODERN MINIMALIST WITH ORANGE ACCENT)
-# ---------------------------------------------------------
 st.markdown("""
     <style>
-    /* Google Fonts */
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 
     html, body, [class*="css"] {
         font-family: 'Plus Jakarta Sans', sans-serif;
-        color: #1A1A1A;
+        color: #1A1A1A !important;
     }
 
-    /* Background Aplikasi */
     .stApp {
-        background-color: #FAFAFA;
+        background-color: #FAFAFA !important;
     }
 
-    /* Sidebar Styling */
     section[data-testid="stSidebar"] {
         background-color: #FFFFFF !important;
-        border-right: 1px solid #EAEAEA;
+        border-right: 1px solid #EAEAEA !important;
     }
 
-    /* Primary Buttons */
     div.stButton > button[kind="primary"], .stDownloadButton > button {
         background-color: #E85D04 !important;
         color: #FFFFFF !important;
@@ -55,17 +45,16 @@ st.markdown("""
         font-weight: 700 !important;
         padding: 12px 24px !important;
         font-size: 15px !important;
-        box-shadow: 0 4px 12px rgba(232, 93, 4, 0.2);
-        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(232, 93, 4, 0.2) !important;
+        transition: all 0.3s ease !important;
     }
     
     div.stButton > button[kind="primary"]:hover, .stDownloadButton > button:hover {
         background-color: #DC2F02 !important;
-        box-shadow: 0 6px 16px rgba(220, 47, 2, 0.3);
-        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(220, 47, 2, 0.3) !important;
+        transform: translateY(-1px) !important;
     }
 
-    /* Secondary Buttons */
     div.stButton > button[kind="secondary"] {
         background-color: #F4F4F5 !important;
         color: #1A1A1A !important;
@@ -78,7 +67,6 @@ st.markdown("""
         background-color: #E4E4E7 !important;
     }
 
-    /* Inputs & Textareas */
     .stTextArea textarea, .stSelectbox select, .stTextInput input {
         border-radius: 8px !important;
         border: 1px solid #E4E4E7 !important;
@@ -91,63 +79,40 @@ st.markdown("""
         box-shadow: 0 0 0 2px rgba(232, 93, 4, 0.15) !important;
     }
 
-
-  
-div[data-testid="stMetric"] {
-    background-color: #FFFFFF !important;
-    border: 1px solid #EAEAEA !important;
-    padding: 16px;
-    border-radius: 12px;
-}
-
-div[data-testid="stMetricLabel"] {
-    font-weight: 600;
-    color: #71717A !important;
-}
-
-div[data-testid="stMetricValue"] {
-    font-weight: 800;
-    color: #1A1A1A !important;
-}
-
-/* Memastikan teks markdown umum tidak ikut gelap */
-p, span, label, .stMarkdown {
-    color: #1A1A1A !important;
-}
-
-    /* Metric Cards Customization */
     div[data-testid="stMetric"] {
-        background-color: #FFFFFF;
-        border: 1px solid #EAEAEA;
-        padding: 16px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        background-color: #FFFFFF !important;
+        border: 1px solid #EAEAEA !important;
+        padding: 16px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02) !important;
     }
     
     div[data-testid="stMetricLabel"] {
-        font-weight: 600;
-        color: #71717A;
+        font-weight: 600 !important;
+        color: #71717A !important;
     }
 
     div[data-testid="stMetricValue"] {
-        font-weight: 800;
-        color: #1A1A1A;
+        font-weight: 800 !important;
+        color: #1A1A1A !important;
     }
 
+    p, span, label, .stMarkdown {
+        color: #1A1A1A !important;
+    }
 
-    /* Tab Header Styling */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-        background-color: transparent;
+        gap: 8px !important;
+        background-color: transparent !important;
     }
 
     .stTabs [data-baseweb="tab"] {
-        border-radius: 8px;
-        padding: 8px 16px;
-        font-weight: 600;
-        color: #71717A;
-        background-color: #F4F4F5;
-        border: none;
+        border-radius: 8px !important;
+        padding: 8px 16px !important;
+        font-weight: 600 !important;
+        color: #71717A !important;
+        background-color: #F4F4F5 !important;
+        border: none !important;
     }
 
     .stTabs [aria-selected="true"] {
@@ -157,9 +122,6 @@ p, span, label, .stMarkdown {
     </style>
 """, unsafe_allow_html=True)
 
-# ---------------------------------------------------------
-# INISIALISASI SESSION STATE
-# ---------------------------------------------------------
 if 'single_result' not in st.session_state:
     st.session_state['single_result'] = None
 
@@ -172,9 +134,9 @@ if 'batch_vec' not in st.session_state:
 if 'batch_col_name' not in st.session_state:
     st.session_state['batch_col_name'] = None
 
-# ---------------------------------------------------------
-# LOAD MODEL & VECTORIZER DARI FILE .PKL
-# ---------------------------------------------------------
+if 'raw_total' not in st.session_state:
+    st.session_state['raw_total'] = 0
+
 @st.cache_resource
 def load_ml_assets():
     with open('model_nb.pkl', 'rb') as f:
@@ -190,35 +152,27 @@ except Exception as e:
     model_loaded = False
     st.error(f"Gagal memuat file model (.pkl). Pastikan 'model_nb.pkl' dan 'tfidf.pkl' berada di folder yang sama!\nError: {e}")
 
-# ---------------------------------------------------------
-# NLP TOOLS & STOPWORDS
-# ---------------------------------------------------------
 @st.cache_resource
 def load_nlp_tools():
     stemmer = StemmerFactory().create_stemmer()
     factory_stop = StopWordRemoverFactory()
     stopwords = factory_stop.get_stop_words()
-    # Pengecualian kata negasi agar sentimen tidak terdistorsi
     negasi = ['tidak', 'bukan', 'kurang']
     stopwords = [w for w in stopwords if w not in negasi]
     return stemmer, stopwords
 
 stemmer, custom_stopwords = load_nlp_tools()
 
-# ---------------------------------------------------------
-# FUNGSI PREPROCESSING (SAMA DENGAN NOTEBOOK COLAB)
-# ---------------------------------------------------------
 def cleaning(text):
     text = str(text)
-    # Filter Bahasa Indonesia menggunakan langdetect
     words = text.split()
     if len(words) >= 5:
-            try:
-                lang = detect(text)
-                if lang not in ['id']:
-                    return ""
-            except LangDetectException:
-                pass # Lanjutkan proses jika gagal deteksi
+        try:
+            lang = detect(text)
+            if lang not in ['id']:
+                return ""
+        except LangDetectException:
+            pass
 
     text = text.lower()
     text = re.sub(r'https?://\S+|www\.\S+', '', text)
@@ -247,21 +201,15 @@ def stem_text(tokens):
     return stemmer.stem(' '.join(tokens)).split()
 
 def preprocess_pipeline(raw_text):
-    """
-    Fungsi terpadu untuk pengujian input teks tunggal (Single Prediction)
-    """
     text = cleaning(raw_text)
     if not text:
         return ""
     text = normalize(text)
-    tokens = text.split()  # Tokenizing
+    tokens = text.split()
     tokens = remove_stopwords(tokens)
     tokens = stem_text(tokens)
-    return ' '.join(tokens)  # Final Text
+    return ' '.join(tokens)
 
-# ---------------------------------------------------------
-# HELPER: TAMPILAN LABEL SENTIMEN
-# ---------------------------------------------------------
 LABEL_STYLE = {
     "positif": ("POSITIF 😊", "success"),
     "negatif": ("NEGATIF 😡", "error"),
@@ -283,9 +231,6 @@ def show_confidence(model, vec_input):
         st.write(f"{cls.capitalize()}")
         st.progress(float(p), text=f"{p*100:.1f}%")
 
-# ---------------------------------------------------------
-# HEADER APLIKASI
-# ---------------------------------------------------------
 st.markdown("""
     <div style="padding: 20px 0 10px 0;">
         <p style="color: #E85D04; font-weight: 700; font-size: 0.9em; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px;">
@@ -300,9 +245,6 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# =========================================================
-# SIDEBAR DESIGN
-# =========================================================
 with st.sidebar:
     st.markdown("""
         <div style="text-align: left; padding: 10px 0 5px 0;">
@@ -354,9 +296,6 @@ with st.sidebar:
         </div>
     """, unsafe_allow_html=True)
 
-# ---------------------------------------------------------
-# MENU 1: UJI KALIMAT TUNGGAL
-# ---------------------------------------------------------
 if menu == "Uji Kalimat Tunggal":
     st.subheader("Uji Sentimen Kalimat / Tweet")
 
@@ -396,17 +335,12 @@ if menu == "Uji Kalimat Tunggal":
         show_prediction(str(res['prediction']).lower())
         show_confidence(model, res['vec_input'])
 
-# ---------------------------------------------------------
-# MENU 2: BATCH ANALYSIS (UPLOAD CSV)
-# ---------------------------------------------------------
 elif menu == "Analisis Dataset":
     st.subheader("📂 Analisis Dataset Sentimen")
     uploaded_file = st.file_uploader("Unggah file CSV data tweet:", type=["csv"])
 
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file)
-        # Cek jumlah baris murni vs nama kolom
-
 
         if st.session_state['batch_result'] is None:
             st.write(f"**Preview Data Terunggah ({len(df)} baris):**")
@@ -420,32 +354,18 @@ elif menu == "Analisis Dataset":
                 else:
                     with st.spinner("Memproses pipeline preprocessing, TF-IDF, & prediksi model... Mohon tunggu..."):
                         raw_total_count = len(df)
-                        # 1. Cleaning Teks & Normalisasi (Termasuk filter langdetect)
+                        
                         df['clean_text'] = df[col_name].astype(str).apply(cleaning).apply(normalize)
-                        
-                        # 2. Hapus teks kosong akibat filter langdetect / pembersihan
                         df = df[df['clean_text'].str.strip() != ''].copy()
-                        
-                        # 3. Otomatis Hapus Duplikat berdasarkan teks yang sudah bersih
                         df = df.drop_duplicates(subset=['clean_text'], keep='first').reset_index(drop=True)
-                        
-                        # 4. Tokenizing (Persis seperti notebook: lambda x: x.split())
                         df['tokens'] = df['clean_text'].apply(lambda x: x.split())
-                        
-                        # 5. Stopword Removal (Menjaga kata negasi: tidak, bukan, kurang)
                         df['tokens'] = df['tokens'].apply(remove_stopwords)
-                        
-                        # 6. Stemming Sastrawi
                         df['tokens'] = df['tokens'].apply(stem_text)
-                        
-                        # 7. Final Text untuk Vektorisasi TF-IDF
                         df['final_text'] = df['tokens'].apply(lambda x: ' '.join(x))
                         
-                        # 8. Transformasi TF-IDF & Prediksi Model Naive Bayes
                         vec_batch = vectorizer.transform(df['final_text'])
                         df['prediksi_sentimen'] = model.predict(vec_batch)
 
-                        # Simpan ke Session State
                         st.session_state['batch_result'] = df
                         st.session_state['batch_vec'] = vec_batch
                         st.session_state['batch_col_name'] = col_name
@@ -459,6 +379,7 @@ elif menu == "Analisis Dataset":
                 st.session_state['batch_result'] = None
                 st.session_state['batch_vec'] = None
                 st.session_state['batch_col_name'] = None
+                st.session_state['raw_total'] = 0
                 st.rerun()
 
     if st.session_state['batch_result'] is not None:
@@ -476,7 +397,6 @@ elif menu == "Analisis Dataset":
         net_val = sentimen_counts.get('netral', 0)
         neg_val = sentimen_counts.get('negatif', 0)
 
-        # Menggunakan total_raw untuk Total Raw Data
         m1, m2, m3, m4 = st.columns(4)
         m1.metric("Total Raw Data", total_raw, f"{valid_total} Data Unik")
         m2.metric("Positif", pos_val, f"{(pos_val/valid_total*100):.1f}%")
@@ -489,7 +409,6 @@ elif menu == "Analisis Dataset":
 
         with tab1:
             st.markdown("#### Tabel Preprocessing Teks & Hasil Prediksi")
-            # Menampilkan tahapan lebih lengkap agar terlihat progres preprocessing-nya
             cols_to_display = [c_name, 'clean_text', 'final_text', 'prediksi_sentimen']
             st.dataframe(df_res[cols_to_display], use_container_width=True)
 
@@ -534,9 +453,7 @@ elif menu == "Analisis Dataset":
             file_name="hasil_analisis_sentimen_lengkap.csv",
             mime="text/csv"
         )
-# ---------------------------------------------------------
-# MENU 3: TENTANG PENELITIAN
-# ---------------------------------------------------------
+
 elif menu == "Tentang Penelitian":
     st.subheader("ℹ️ Informasi Skripsi")
     
@@ -571,5 +488,4 @@ elif menu == "Tentang Penelitian":
     with m_col:
         st.metric("Akurasi Model", "74%")
     
-
     st.caption("SMOTE diterapkan untuk menangani ketidakseimbangan kelas pada data training.")
