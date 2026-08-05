@@ -7,3 +7,4 @@ scikit-learn
 Sastrawi
 joblib
 langdetect
+streamlit-option-menu
