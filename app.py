@@ -352,7 +352,7 @@ elif menu == "Analisis Dataset":
                 if not model_loaded:
                     st.error("Model/Vectorizer belum berhasil dimuat. Periksa kembali file .pkl Anda.")
                 else:
-                    with st.spinner("Memproses pipeline preprocessing, TF-IDF, & prediksi model... Mohon tunggu..."):
+                    with st.spinner("Melakukan preprocessing, TF-IDF, & prediksi model... Mohon tunggu..."):
                         raw_total_count = len(df)
                         
                         df['clean_text'] = df[col_name].astype(str).apply(cleaning).apply(normalize)
