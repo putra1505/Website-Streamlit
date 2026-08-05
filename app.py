@@ -91,6 +91,7 @@ st.markdown("""
         box-shadow: 0 0 0 2px rgba(232, 93, 4, 0.15) !important;
     }
 
+<<<<<<< HEAD
   
 div[data-testid="stMetric"] {
     background-color: #FFFFFF !important;
@@ -113,6 +114,26 @@ div[data-testid="stMetricValue"] {
 p, span, label, .stMarkdown {
     color: #1A1A1A !important;
 }
+=======
+    /* Metric Cards Customization */
+    div[data-testid="stMetric"] {
+        background-color: #FFFFFF;
+        border: 1px solid #EAEAEA;
+        padding: 16px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    
+    div[data-testid="stMetricLabel"] {
+        font-weight: 600;
+        color: #71717A;
+    }
+
+    div[data-testid="stMetricValue"] {
+        font-weight: 800;
+        color: #1A1A1A;
+    }
+>>>>>>> 7fc3bd3ae8fcfb56e06923f0a947fda142c3309a
 
     /* Tab Header Styling */
     .stTabs [data-baseweb="tab-list"] {
@@ -550,6 +571,10 @@ elif menu == "Tentang Penelitian":
     with m_col:
         st.metric("Akurasi Model", "74%")
     
+<<<<<<< HEAD
     st.caption("SMOTE diterapkan untuk menangani ketidakseimbangan kelas pada data training.")
 
     # update
+=======
+    st.caption("SMOTE diterapkan untuk menangani ketidakseimbangan kelas pada data training.")
+>>>>>>> 7fc3bd3ae8fcfb56e06923f0a947fda142c3309a

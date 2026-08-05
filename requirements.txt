@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 streamlit
 pandas
 numpy
@@ -7,3 +8,15 @@ scikit-learn
 Sastrawi
 joblib
 langdetect
+=======
+streamlit
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+Sastrawi
+joblib
+langdetect
+streamlit-option-menu
+>>>>>>> 7fc3bd3ae8fcfb56e06923f0a947fda142c3309a
