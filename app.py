@@ -296,7 +296,7 @@ with st.sidebar:
         </div>
     """, unsafe_allow_html=True)
 
-if menu == "Uji Kalimat Tunggal":
+if menu == "Uji ":
     st.subheader("Uji Sentimen Kalimat / Tweet")
 
     user_input = st.text_area(
