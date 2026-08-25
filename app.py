@@ -198,7 +198,7 @@ def remove_stopwords(tokens):
     return [word for word in tokens if word not in custom_stopwords]
 
 def stem_text(tokens):
-    return stemmer.stem(' '.join(tokens)).split()
+    return [stemmer.stem(word) for word in tokens]
 
 def preprocess_pipeline(raw_text):
     text = cleaning(raw_text)
