@@ -165,14 +165,12 @@ stemmer, custom_stopwords = load_nlp_tools()
 
 def cleaning(text):
     text = str(text)
-    words = text.split()
-    if len(words) >= 5:
-        try:
-            lang = detect(text)
-            if lang not in ['id']:
-                return ""
-        except LangDetectException:
-            pass
+    try:
+        lang = detect(text)
+        if lang not in ['id']:
+            return ""
+    except LangDetectException:
+        return ""
 
     text = text.lower()
     text = re.sub(r'https?://\S+|www\.\S+', '', text)
