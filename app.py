@@ -192,10 +192,9 @@ def normalize(text):
     text = text.replace("nyembuhin", "sembuh")
     return text
 
-def remove_stopwords(tokens):
-  factory = StopWordRemoverFactory()
+factory_stop = StopWordRemoverFactory()
 
-custom_stopwords = factory.get_stop_words()
+custom_stopwords = factory_stop.get_stop_words()
 
 negasi = ['tidak', 'bukan', 'kurang']
 
@@ -203,6 +202,12 @@ custom_stopwords = [
     word for word in custom_stopwords
     if word not in negasi
 ]
+
+def remove_stopwords(tokens):
+    return [
+        word for word in tokens
+        if word not in custom_stopwords
+    ]
 
 def stem_text(tokens):
     return [stemmer.stem(word) for word in tokens]
