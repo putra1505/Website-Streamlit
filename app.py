@@ -361,14 +361,15 @@ elif menu == "Analisis Dataset":
                         
                         df['clean_text'] = df[col_name].astype(str).apply(cleaning).apply(normalize)
                         df = df[df['clean_text'].str.strip() != ''].copy()
+                            df = df.drop_duplicates(
+                            subset=['final_text'],
+                            keep='first'
+                        ).reset_index(drop=True)
                         df['tokens'] = df['clean_text'].apply(lambda x: x.split())
                         df['tokens'] = df['tokens'].apply(remove_stopwords)
                         df['tokens'] = df['tokens'].apply(stem_text)
                         df['final_text'] = df['tokens'].apply(lambda x: ' '.join(x))
-                        df = df.drop_duplicates(
-                            subset=['final_text'],
-                            keep='first'
-                        ).reset_index(drop=True)
+    
                         
                         vec_batch = vectorizer.transform(df['final_text'])
                         df['prediksi_sentimen'] = model.predict(vec_batch)
