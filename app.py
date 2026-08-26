@@ -176,7 +176,7 @@ def cleaning(text):
     text = re.sub(r'@\w+', '', text)
     text = re.sub(r'#', '', text)
     text = re.sub(r'\d+', '', text)
-    text = re.sub(r'â\w+', '', text
+    text = re.sub(r'â\w+', '', text)
     text = text.translate(str.maketrans('', '', string.punctuation))
     text = re.sub(r'\s+', ' ', text).strip()
     return text
