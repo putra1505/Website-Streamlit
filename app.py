@@ -361,9 +361,7 @@ elif menu == "Analisis Dataset":
                         
                         df['clean_text'] = df[col_name].astype(str).apply(cleaning).apply(normalize)
                         df = df[df['clean_text'].str.strip() != ''].copy()
-                            df = df.drop_duplicates(
-                            subset=['final_text'],
-                            keep='first'
+                        df = df.drop_duplicates(subset=['final_text'],keep='first'
                         ).reset_index(drop=True)
                         df['tokens'] = df['clean_text'].apply(lambda x: x.split())
                         df['tokens'] = df['tokens'].apply(remove_stopwords)
