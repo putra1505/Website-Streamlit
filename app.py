@@ -198,14 +198,18 @@ def stem_text(tokens):
  return stemmer.stem(' '.join(tokens)).split()
 
 def preprocess_pipeline(raw_text):
- text = cleaning(raw_text)
-if not text:
-return ""
-text = normalize(text)
-tokens = text.split()
-tokens = remove_stopwords(tokens)
-tokens = stem_text(tokens)
-return ' '.join(tokens)
+    text = cleaning(raw_text)
+
+    if not text:
+        return ""
+
+    text = normalize(text)
+
+    tokens = text.split()
+    tokens = remove_stopwords(tokens)
+    tokens = stem_text(tokens)
+
+    return ' '.join(tokens)
 
 LABEL_STYLE = {
 
