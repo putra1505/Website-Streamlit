@@ -171,8 +171,9 @@ def cleaning(text):
             return ""
     except LangDetectException:
         return ""
+
     text = text.lower()
-    text = re.sub(r'https?://\S+|www**\.**\S+', '', text)
+    text = re.sub(r'https?://\S+|www\.\S+', '', text)
     text = re.sub(r'@\w+', '', text)
     text = re.sub(r'#', '', text)
     text = re.sub(r'\d+', '', text)
@@ -180,7 +181,7 @@ def cleaning(text):
     text = text.translate(str.maketrans('', '', string.punctuation))
     text = re.sub(r'\s+', ' ', text).strip()
     return text
-    
+
 def normalize(text):
     if pd.isna(text):
         return ""
@@ -191,35 +192,42 @@ def normalize(text):
     text = text.replace("nyembuhin", "sembuh")
     return text
 
+factory_stop = StopWordRemoverFactory()
+
+custom_stopwords = factory_stop.get_stop_words()
+
+negasi = ['tidak', 'bukan', 'kurang']
+
+custom_stopwords = [
+    word for word in custom_stopwords
+    if word not in negasi
+]
+
 def remove_stopwords(tokens):
-  return [word for word in tokens if word not in custom_stopwords]
+    return [
+        word for word in tokens
+        if word not in custom_stopwords
+    ]
 
 def stem_text(tokens):
- return stemmer.stem(' '.join(tokens)).split()
+    return [stemmer.stem(word) for word in tokens]
 
 def preprocess_pipeline(raw_text):
     text = cleaning(raw_text)
-
     if not text:
         return ""
-
     text = normalize(text)
-
     tokens = text.split()
     tokens = remove_stopwords(tokens)
     tokens = stem_text(tokens)
-
     return ' '.join(tokens)
 
 LABEL_STYLE = {
-
     "positif": ("POSITIF 😊", "success"),
-
     "negatif": ("NEGATIF 😡", "error"),
-
     "netral":  ("NETRAL 😐", "warning"),
-
 }
+
 def show_prediction(label):
     text, kind = LABEL_STYLE.get(label, (label.upper(), "info"))
     getattr(st, kind)(f"### Sentimen: {text}")
@@ -361,13 +369,14 @@ elif menu == "Analisis Dataset":
                         
                         df['clean_text'] = df[col_name].astype(str).apply(cleaning).apply(normalize)
                         df = df[df['clean_text'].str.strip() != ''].copy()
-                        df = df.drop_duplicates(subset=['final_text'],keep='first'
-                        ).reset_index(drop=True)
                         df['tokens'] = df['clean_text'].apply(lambda x: x.split())
                         df['tokens'] = df['tokens'].apply(remove_stopwords)
                         df['tokens'] = df['tokens'].apply(stem_text)
                         df['final_text'] = df['tokens'].apply(lambda x: ' '.join(x))
-    
+                        df = df.drop_duplicates(
+                            subset=['final_text'],
+                            keep='first'
+                        ).reset_index(drop=True)
                         
                         vec_batch = vectorizer.transform(df['final_text'])
                         df['prediksi_sentimen'] = model.predict(vec_batch)
