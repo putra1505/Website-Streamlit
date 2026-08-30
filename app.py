@@ -134,6 +134,9 @@ if 'batch_vec' not in st.session_state:
 if 'batch_col_name' not in st.session_state:
     st.session_state['batch_col_name'] = None
 
+if 'batch_url_col' not in st.session_state:
+    st.session_state['batch_url_col'] = None
+
 if 'raw_total' not in st.session_state:
     st.session_state['raw_total'] = 0
 
@@ -348,6 +351,22 @@ elif menu == "Analisis Dataset":
 
             col_name = st.selectbox("Pilih kolom teks tweet:", df.columns)
 
+            url_options = ["(Tidak ada)"] + list(df.columns)
+            url_keywords = ['url', 'link', 'tautan', 'permalink']
+            auto_detected_url_col = next(
+                (c for c in df.columns if any(k in c.lower() for k in url_keywords)),
+                None
+            )
+            default_url_idx = (
+                url_options.index(auto_detected_url_col) if auto_detected_url_col else 0
+            )
+            url_col_selected = st.selectbox(
+                "Kolom URL sumber tweet:",
+                url_options,
+                index=default_url_idx,
+                help="Otomatis terdeteksi dari nama kolom jika ada. Ubah jika kolomnya berbeda."
+            )
+
             if st.button("Proses Seluruh Data", type="primary"):
                 if not model_loaded:
                     st.error("Model/Vectorizer belum berhasil dimuat. Periksa kembali file .pkl Anda.")
@@ -369,6 +388,9 @@ elif menu == "Analisis Dataset":
                         st.session_state['batch_result'] = df
                         st.session_state['batch_vec'] = vec_batch
                         st.session_state['batch_col_name'] = col_name
+                        st.session_state['batch_url_col'] = (
+                            url_col_selected if url_col_selected != "(Tidak ada)" else None
+                        )
                         st.session_state['raw_total'] = raw_total_count
 
                     st.success("Selesai memproses seluruh data!")
@@ -379,6 +401,7 @@ elif menu == "Analisis Dataset":
                 st.session_state['batch_result'] = None
                 st.session_state['batch_vec'] = None
                 st.session_state['batch_col_name'] = None
+                st.session_state['batch_url_col'] = None
                 st.session_state['raw_total'] = 0
                 st.rerun()
 
@@ -386,6 +409,7 @@ elif menu == "Analisis Dataset":
         df_res = st.session_state['batch_result']
         vec_b = st.session_state['batch_vec']
         c_name = st.session_state['batch_col_name']
+        url_col = st.session_state['batch_url_col']
         total_raw = st.session_state['raw_total']
 
         st.divider()
@@ -407,26 +431,27 @@ elif menu == "Analisis Dataset":
 
         tab1, tab2, tab3 = st.tabs(["📋 Hasil Preprocessing & Prediksi", "🔠 Hasil Matriks TF-IDF", "📈 Visualisasi Grafik"])
 
-         with tab1:
+        with tab1:
             st.markdown("#### Tabel Preprocessing Teks & Hasil Prediksi")
             cols_to_display = [c_name, 'clean_text', 'final_text', 'prediksi_sentimen']
             if url_col is not None:
                 cols_to_display.insert(1, url_col)
- 
+
             display_df = df_res[cols_to_display].copy()
- 
+
             column_config = {}
             if url_col is not None:
                 column_config[url_col] = st.column_config.LinkColumn(
                     "URL Sumber Tweet",
                     display_text="Buka Tweet"
                 )
- 
+
             st.dataframe(
                 display_df,
                 use_container_width=True,
                 column_config=column_config if column_config else None
             )
+
         with tab2:
             st.markdown("#### Tabel Ekstraksi Fitur (Matriks TF-IDF)")
             st.caption("Menampilkan bobot nilai TF-IDF untuk setiap kata/fitur pada 100 data pertama.")
@@ -475,6 +500,8 @@ elif menu == "Analisis Dataset":
             'final_text': 'Teks Hasil Stemming',
             'prediksi_sentimen': 'Hasil Prediksi Sentimen'
         }
+        if url_col is not None:
+            rename_map[url_col] = 'URL Sumber Tweet'
         df_download = df_download.rename(columns=rename_map)
 
         st.download_button(
