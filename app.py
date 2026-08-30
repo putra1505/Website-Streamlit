@@ -407,11 +407,26 @@ elif menu == "Analisis Dataset":
 
         tab1, tab2, tab3 = st.tabs(["📋 Hasil Preprocessing & Prediksi", "🔠 Hasil Matriks TF-IDF", "📈 Visualisasi Grafik"])
 
-        with tab1:
+         with tab1:
             st.markdown("#### Tabel Preprocessing Teks & Hasil Prediksi")
             cols_to_display = [c_name, 'clean_text', 'final_text', 'prediksi_sentimen']
-            st.dataframe(df_res[cols_to_display], use_container_width=True)
-
+            if url_col is not None:
+                cols_to_display.insert(1, url_col)
+ 
+            display_df = df_res[cols_to_display].copy()
+ 
+            column_config = {}
+            if url_col is not None:
+                column_config[url_col] = st.column_config.LinkColumn(
+                    "URL Sumber Tweet",
+                    display_text="Buka Tweet"
+                )
+ 
+            st.dataframe(
+                display_df,
+                use_container_width=True,
+                column_config=column_config if column_config else None
+            )
         with tab2:
             st.markdown("#### Tabel Ekstraksi Fitur (Matriks TF-IDF)")
             st.caption("Menampilkan bobot nilai TF-IDF untuk setiap kata/fitur pada 100 data pertama.")
