@@ -203,6 +203,24 @@ def remove_stopwords(tokens):
 def stem_text(tokens):
     return [stemmer.stem(word) for word in tokens]
 
+def detect_url_column(df):
+    if 'tweet_url' in df.columns:
+        return 'tweet_url'
+    best_col = None
+    best_ratio = 0.0
+    for col in df.columns:
+        sample = df[col].dropna().astype(str).head(50)
+        if len(sample) == 0:
+            continue
+        matches = sample.str.contains(r'^https?://', regex=True, na=False)
+        ratio = matches.mean()
+        if ratio > best_ratio:
+            best_ratio = ratio
+            best_col = col
+    if best_ratio >= 0.5:
+        return best_col
+    return None
+
 def preprocess_pipeline(raw_text):
     text = cleaning(raw_text)
     if not text:
@@ -351,21 +369,9 @@ elif menu == "Analisis Dataset":
 
             col_name = st.selectbox("Pilih kolom teks tweet:", df.columns)
 
-            url_options = ["(Tidak ada)"] + list(df.columns)
-            url_keywords = ['url', 'link', 'tautan', 'permalink']
-            auto_detected_url_col = next(
-                (c for c in df.columns if any(k in c.lower() for k in url_keywords)),
-                None
-            )
-            default_url_idx = (
-                url_options.index(auto_detected_url_col) if auto_detected_url_col else 0
-            )
-            url_col_selected = st.selectbox(
-                "Kolom URL sumber tweet:",
-                url_options,
-                index=default_url_idx,
-                help="Otomatis terdeteksi dari nama kolom jika ada. Ubah jika kolomnya berbeda."
-            )
+            auto_detected_url_col = detect_url_column(df)
+            if auto_detected_url_col:
+                st.caption(f"🔗 Kolom URL terdeteksi otomatis: **{auto_detected_url_col}**")
 
             if st.button("Proses Seluruh Data", type="primary"):
                 if not model_loaded:
@@ -388,9 +394,7 @@ elif menu == "Analisis Dataset":
                         st.session_state['batch_result'] = df
                         st.session_state['batch_vec'] = vec_batch
                         st.session_state['batch_col_name'] = col_name
-                        st.session_state['batch_url_col'] = (
-                            url_col_selected if url_col_selected != "(Tidak ada)" else None
-                        )
+                        st.session_state['batch_url_col'] = auto_detected_url_col
                         st.session_state['raw_total'] = raw_total_count
 
                     st.success("Selesai memproses seluruh data!")
